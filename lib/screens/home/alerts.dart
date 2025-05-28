@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:disaster_management/components/custom_bottom_navbar.dart';
+import 'package:disaster_management/services/data_store.dart';
 
-class EmergencyAlertsPage extends StatelessWidget {
+class EmergencyAlertsPage extends StatefulWidget {
   const EmergencyAlertsPage({super.key});
+
+  @override
+  State<EmergencyAlertsPage> createState() => _EmergencyAlertsPageState();
+}
+
+class _EmergencyAlertsPageState extends State<EmergencyAlertsPage> {
+  List<IncidentReport> _activeAlerts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAlerts();
+  }
+
+  void _loadAlerts() {
+    setState(() {
+      _activeAlerts = getMatchingIncidents();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,34 +41,23 @@ class EmergencyAlertsPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: const [
-            _WeatherAlertItem(
-              dayTime: 'Sun, 12:40pm',
-              message: 'Showers or thundershowers will occur',
-            ),
-            _WeatherAlertItem(
-              dayTime: 'Mon, 11:50pm',
-              message: 'Misty conditions can be expected at',
-            ),
-            _WeatherAlertItem(
-              dayTime: 'Tue, 10:56pm',
-              message: 'Heavy showers more than 100mm',
-            ),
-            _WeatherAlertItem(
-              dayTime: 'Sun, 12:40pm',
-              message: 'Showers or thundershowers will occur',
-            ),
-            _WeatherAlertItem(
-              dayTime: 'Mon, 11:50pm',
-              message: 'Misty conditions can be expected at',
-            ),
-            _WeatherAlertItem(
-              dayTime: 'Tue, 10:56pm',
-              message: 'Heavy showers more than 100mm',
-            ),
-          ],
-        ),
+        child: _activeAlerts.isEmpty
+            ? Center(
+                child: Text(
+                  currentUserCity != null && currentUserCity!.isNotEmpty
+                      ? 'No incidents currently reported for ${currentUserCity!}.'
+                      : 'No incidents reported or city not set.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              )
+            : ListView.builder(
+                itemCount: _activeAlerts.length,
+                itemBuilder: (context, index) {
+                  final incident = _activeAlerts[index];
+                  return _IncidentAlertItem(incident: incident);
+                },
+              ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
         selectedIndex: 1,
@@ -77,14 +86,10 @@ class EmergencyAlertsPage extends StatelessWidget {
   }
 }
 
-class _WeatherAlertItem extends StatelessWidget {
-  final String dayTime;
-  final String message;
+class _IncidentAlertItem extends StatelessWidget {
+  final IncidentReport incident;
 
-  const _WeatherAlertItem({
-    required this.dayTime,
-    required this.message,
-  });
+  const _IncidentAlertItem({required this.incident});
 
   @override
   Widget build(BuildContext context) {
@@ -105,41 +110,45 @@ class _WeatherAlertItem extends StatelessWidget {
               height: 40,
               alignment: Alignment.center,
               child: const Icon(
-                Icons.notifications_active,
+                Icons.warning_amber_rounded,
                 color: Colors.red,
                 size: 35,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12), // Increased spacing a bit
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Weather Warning :',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                      Text(
-                        dayTime,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Incident: ${incident.disasterType}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Location: ${incident.location}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    message,
+                    'Details: ${incident.description}',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Reported by: ${incident.fullName}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey,
                     ),
                   ),
                 ],

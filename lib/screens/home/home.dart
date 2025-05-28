@@ -4,6 +4,7 @@ import 'alerts.dart';
 import 'newsfeed.dart';
 import 'package:disaster_management/screens/chatbot/aiassistantpage.dart';
 import 'package:disaster_management/screens/home/profile.dart';
+import 'package:disaster_management/screens/report_incident.dart' as actual_report_incident_page;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -97,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Report Incident',
                       Icons.report,
                       Colors.orange,
-                      () => _navigateToScreen(const ReportIncidentScreen())),
+                      () => _navigateToScreen(actual_report_incident_page.ReportIncidentPage(currentIndex: 0, onTap: (int index) {}))),
                 ],
               ),
             ),
@@ -328,39 +329,6 @@ class KnowledgePanelScreen extends StatelessWidget {
             SizedBox(height: 10),
             Text(
               'Emergency guides and safety information',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ReportIncidentScreen extends StatelessWidget {
-  const ReportIncidentScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Report Incident'),
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.report, size: 64, color: Colors.orange),
-            SizedBox(height: 20),
-            Text(
-              'Report Incident',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Report emergencies and incidents in your area',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],

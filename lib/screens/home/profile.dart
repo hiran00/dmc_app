@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:disaster_management/components/custom_bottom_navbar.dart';
+import 'package:disaster_management/services/data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -46,6 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
             phoneController.text = data['phone'] ?? '';
             addressController.text = data['address'] ?? '';
             cityController.text = data['city'] ?? '';
+            updateUserCity(data['city']);
             passwordController.text = '';
           });
         }
@@ -88,6 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       // Refresh user info from Firebase
       await user.reload();
+      updateUserCity(cityController.text.trim()); // Added this line
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),

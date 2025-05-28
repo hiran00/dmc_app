@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:disaster_management/components/custom_bottom_navbar.dart';
+// import 'package:disaster_management/components/custom_bottom_navbar.dart'; // No longer needed
+import 'package:disaster_management/services/data_store.dart';
 
 class ReportIncidentPage extends StatefulWidget {
-  final int currentIndex;
-  final Function(int) onTap;
+  final int? currentIndex; // Made optional
+  final Function(int)? onTap; // Made optional
 
   const ReportIncidentPage({
     super.key,
-    required this.currentIndex,
-    required this.onTap,
+    this.currentIndex,
+    this.onTap,
   });
 
   @override
@@ -271,10 +272,10 @@ class _ReportIncidentPageState extends State<ReportIncidentPage> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: widget.currentIndex,
-        onItemTapped: widget.onTap,
-      ),
+      // bottomNavigationBar: CustomBottomNavBar( // Removed
+      //   selectedIndex: widget.currentIndex ?? 0,
+      //   onItemTapped: widget.onTap ?? (int index) {},
+      // ),
     );
   }
 
@@ -298,6 +299,15 @@ class _ReportIncidentPageState extends State<ReportIncidentPage> {
       _showSnackBar('Please select a location');
       return;
     }
+
+    // Create and store the incident report
+    final newReport = IncidentReport(
+      fullName: _nameController.text,
+      disasterType: _selectedIncidentType!,
+      description: _descriptionController.text,
+      location: _selectedLocation!,
+    );
+    reportedIncidents.add(newReport);
 
     _showSnackBar('Report submitted successfully!');
     _clearForm();
