@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:disaster_management/components/custom_bottom_navbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsfeedPage extends StatelessWidget {
   const NewsfeedPage({super.key});
@@ -24,11 +25,19 @@ class NewsfeedPage extends StatelessWidget {
         child: ListView(
           children: const [
             _NewsItem(
-              imageNumber: '1/8',
               title: 'Over 100 People are killed in flood',
               description:
                   'Lorem ipsum dolor sit amet consec Amet ut adipiscing\nipsum dosit amet consec Amet ut adipiscing',
               imagePath: 'assets/flood.jpg',
+              newsUrl: 'https://example.com/news1',
+            ),
+            SizedBox(height: 16),
+            _NewsItem(
+              title: 'Over 100 People are killed in flood',
+              description:
+                  'Lorem ipsum dolor sit amet consec Amet ut adipiscing\nipsum dosit amet consec Amet ut adipiscing',
+              imagePath: 'assets/flood.jpg',
+              newsUrl: 'https://example.com/news2',
             ),
             SizedBox(height: 16),
             _NewsItem(
@@ -37,14 +46,7 @@ class NewsfeedPage extends StatelessWidget {
               description:
                   'Lorem ipsum dolor sit amet consec Amet ut adipiscing\nipsum dosit amet consec Amet ut adipiscing',
               imagePath: 'assets/flood.jpg',
-            ),
-            SizedBox(height: 16),
-            _NewsItem(
-              imageNumber: '1/8',
-              title: 'Over 100 People are killed in flood',
-              description:
-                  'Lorem ipsum dolor sit amet consec Amet ut adipiscing\nipsum dosit amet consec Amet ut adipiscing',
-              imagePath: 'assets/flood.jpg',
+              newsUrl: 'https://example.com/news3',
             ),
           ],
         ),
@@ -73,23 +75,32 @@ class NewsfeedPage extends StatelessWidget {
 }
 
 class _NewsItem extends StatelessWidget {
-  final String imageNumber;
   final String title;
   final String description;
   final String imagePath;
+  final String newsUrl;
 
   const _NewsItem({
-    required this.imageNumber,
     required this.title,
     required this.description,
     required this.imagePath,
+    required this.newsUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
+    return InkWell(
+      onTap: () async {
+        final Uri url = Uri.parse(newsUrl);
+        if (!await canLaunchUrl(url)) {
+          print('Could not launch $newsUrl');
+        } else {
+          await launchUrl(url);
+        }
+      },
+      child: Card(
+        elevation: 0,
+        margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.grey.shade200, width: 1),
@@ -108,25 +119,6 @@ class _NewsItem extends StatelessWidget {
                   image: DecorationImage(
                     image: AssetImage(imagePath),
                     fit: BoxFit.cover,
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      imageNumber,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -168,6 +160,7 @@ class _NewsItem extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
